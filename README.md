@@ -1,8 +1,6 @@
-# .vimrc
-My personal .vimrc
+# My personal .vimrc
 
-Rename
+For ease of use on linux, you can clone this repository and then create a simlink in your home directory where Vim searches by default.
 
-`_vimrc` to `.vimrc`
-
-for compatibility with linux
+From your home directory:
+`ln -s /path/to/this/_vimrc ~/.vim` (Note that linux expects *.vimrc*, not *_vimrc*)
