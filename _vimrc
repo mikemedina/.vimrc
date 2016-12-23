@@ -1,0 +1,215 @@
+"{{{ Settings
+
+let mapleader=","               " Set the leader key to ,
+set autochdir                   " Automatically chdir into the file's directory
+set autoindent                  " Maintain indentation when changing lines
+set backspace=indent,eol,start  " Let <C-BS> delete freely
+set columns=83                  " Show 83 columns by default
+set expandtab                   " Convert Tabs to the number of spaces defined by tabstop
+set fdm=marker                  " Fold {{{ }}} markers by default
+set hlsearch                    " Highlight all search results
+set ignorecase                  " Make searches case insensitive
+set incsearch                   " Highlight search matches as searches are typed
+set linebreak                   " Break words sensibly when wrap is turned on
+set lines=40                    " Show 40 lines by default
+set nobackup                    " Don't create backup files
+set nocompatible                " Turn off forced compatibility with old Vi
+set noswapfile                  " Store buffers in memory instead of in temporary files
+set nowrap                      " No line wrapping
+set nowritebackup               " Don't create a temporary backup before saving
+set number                      " Show line numbers
+set relativenumber              " Show relative line numbers
+set ruler                       " Show row and column
+set scrolloff=5                 " Number of rows from vertical edge to start scrolling
+set shiftwidth=4                " Number of spaces to indent code scope levels
+set showmatch                   " Show matching brackets
+set sidescroll=1                " Number of cols to scroll at a time
+set sidescrolloff=15            " Number of cols from horizontal edge to start scrolling
+set smartcase                   " Case sensitive search if search has capitals
+set softtabstop=4               " Behave as though expandtab is off
+set tabstop=4                   " Number of spaces that a Tab counts for
+syntax on
+
+if has ("gui_running")
+    set guioptions -=T
+    set guioptions -=m
+    set guifont=Consolas:h11:cANSI
+    highlight ColorColumn guibg=LightBlue
+endif
+
+if has("win32")
+    source $VIMRUNTIME/mswin.vim
+    behave mswin
+endif
+
+if filereadable(expand("$HOME/.vim/colors/elflord2.vim"))
+    colorscheme elflord2
+endif
+
+"}}}
+
+"{{{ Key Swaps
+
+" Swap # and * and prevent the automatic jump to the first matching result
+nnoremap # *N
+nnoremap * #N
+vnoremap # *N
+vnoremap * #N
+
+" Swap 0 and ^ because 0 is easier to reach
+nnoremap ^ 0
+nnoremap 0 ^
+vnoremap ^ 0
+vnoremap 0 ^
+
+" Swap G and gg because reasons
+nnoremap gg G
+nnoremap G gg
+vnoremap gg G
+vnoremap G gg
+
+" Swap { and [ because regular ['s are much less useful and this saves a Shift
+nnoremap [ {
+nnoremap ] }
+vnoremap [ {
+vnoremap ] }
+
+"}}}
+
+"{{{ Bindings in Rough Order of Usefulness
+
+" Rebind j/k to gj/gk so wrapped lines are treated like normal lines
+nnoremap <silent> j gj
+nnoremap <silent> k gk
+
+" Press Enter to insert a newline below/above in NORMAL mode
+nmap <Enter> o<Esc>
+nmap <S-Enter> O<Esc>
+
+" Press Ctrl+Backspace to delete the previous word
+inoremap <C-BS> <C-w>
+
+" Maintain selection after indenting with << and >>
+vnoremap < <gv
+vnoremap > >gv
+
+" Make puts match the indent of the current line
+nnoremap p ]p
+nnoremap P ]P
+
+" Center the screen on each search result as they're cycled through
+nnoremap n nzz
+nnoremap N Nzz
+
+" Press Alt+j/k to move the current line up or down
+nnoremap <A-j> :m .+1<CR>==
+nnoremap <A-k> :m .-2<CR>==
+inoremap <A-j> <Esc>:m .+1<CR>==gi
+inoremap <A-k> <Esc>:m .-2<CR>==gi
+vnoremap <A-j> :m '>+1<CR>gv=gv
+vnoremap <A-k> :m '<-2<CR>gv=gv
+
+" Repeat last macro
+nnoremap Q @@
+
+" Press Shift+Tab to dedent in insert mode
+inoremap <S-Tab> <C-o><<
+
+" Search for the current visually selected text
+vnoremap // y/<C-R>"<CR>
+
+" Increment or decrement a number
+nnoremap + <C-a>
+nnoremap - <C-x>
+
+" Press V to select the current line without the line ending
+nnoremap V 0v$
+
+" Press Y to yank from cursor to the end of line
+nnoremap Y y$
+
+" Press PgUp/Down to jump to the next non-whitespace character in the column
+nnoremap <PageUp> :call search('\%' . virtcol('.') . 'v\S', 'bW')<CR>zz;<Esc>
+nnoremap <PageDown> :call search('\%' . virtcol('.') . 'v\S')<CR>zz;<Esc>
+
+" Press Ctrl+h/l to move left and right between tabs
+nnoremap <C-h> :tabp<CR>
+nnoremap <C-l> :tabn<CR>
+
+" Press Alt+h/l to switch between splits
+nnoremap <A-l> <C-w><C-l>
+nnoremap <A-h> <C-w><C-h>
+
+" Move the screen up and down with the cursor
+nnoremap <C-j> j<C-e>
+nnoremap <C-k> k<C-y>
+
+" Press Space to turn off highlighting after a search
+nnoremap <silent> <Space> :nohls<CR>
+
+" Press F9 to run the current file in a Python shell
+nnoremap <F9> :w<CR>:exec '!python' shellescape(@%, 1)<CR>
+
+" Press =j to format a json file
+nnoremap =j :%!python -m json.tool<CR>:set cc=0<CR>
+
+" Press =c to format a csv file
+nnoremap =c :let width = 20<CR>:let fill = repeat(' ', width)<CR>:%s/\([^,]*\),\=/\=strpart(submatch(1).fill, 0, width)/ge<CR>:%s/\s\+$//ge<CR>:set cc=0<CR>
+
+"}}}
+
+"{{{ Leader mappings
+
+" Open .vimrc in a new tab
+nnoremap <leader>v :tabe $MYVIMRC<CR>fCv$gf
+
+" Find and replace the current selection
+vnoremap <leader>r "zy:%s/<C-r>z//g<Left><Left>
+
+" Press <leader>zz to toggle having the window follow cursor
+nnoremap <leader>zz :let &scrolloff=999-&scrolloff<CR>
+
+" Open the built in File Explorer in its own tab
+nnoremap <leader>` :Te<CR>
+
+"}}}
+
+"{{{ Miscellaneous
+
+" Press <leader>n to toggle between relative and absolute line numbering
+function! NumberToggle()
+  if(&relativenumber == 1)
+    set relativenumber!
+  else
+    set relativenumber
+  endif
+endfunc
+nnoremap <leader>n :call NumberToggle()<cr>
+
+set diffexpr=MyDiff()
+function MyDiff()
+  let opt = '-a --binary '
+  if &diffopt =~ 'icase' | let opt = opt . '-i ' | endif
+  if &diffopt =~ 'iwhite' | let opt = opt . '-b ' | endif
+  let arg1 = v:fname_in
+  if arg1 =~ ' ' | let arg1 = '"' . arg1 . '"' | endif
+  let arg2 = v:fname_new
+  if arg2 =~ ' ' | let arg2 = '"' . arg2 . '"' | endif
+  let arg3 = v:fname_out
+  if arg3 =~ ' ' | let arg3 = '"' . arg3 . '"' | endif
+  let eq = ''
+  if $VIMRUNTIME =~ ' '
+    if &sh =~ '\<cmd'
+      let cmd = '""' . $VIMRUNTIME . '\diff"'
+      let eq = '"'
+    else
+      let cmd = substitute($VIMRUNTIME, ' ', '" ', '') . '\diff"'
+    endif
+  else
+    let cmd = $VIMRUNTIME . '\diff'
+  endif
+  silent execute '!' . cmd . ' ' . opt . arg1 . ' ' . arg2 . ' > ' . arg3 . eq
+endfunction
+
+"}}}
+
