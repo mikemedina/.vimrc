@@ -1,17 +1,21 @@
 "{{{ Settings
 
 let mapleader=","               " Set the leader key to ,
-set autochdir                   " Automatically chdir into the file's directory
+let g:netrw_banner=0            " Remove the default banner from the directory view
+let g:netrw_browse_split=4      " Open files in the previous window, not directory window
+let g:netrw_liststyle=3         " Set the default directory view type to 'tree'
+let g:netrw_winsize=25          " Set the default width of the directory view to 25%
+
 set autoindent                  " Maintain indentation when changing lines
 set backspace=indent,eol,start  " Let <C-BS> delete freely
-set columns=83                  " Show 83 columns by default
+set dir=$HOME\\vim-temp         " Set the directory to store swap files
 set expandtab                   " Convert Tabs to the number of spaces defined by tabstop
 set fdm=marker                  " Fold {{{ }}} markers by default
 set hlsearch                    " Highlight all search results
 set ignorecase                  " Make searches case insensitive
 set incsearch                   " Highlight search matches as searches are typed
 set linebreak                   " Break words sensibly when wrap is turned on
-set lines=40                    " Show 40 lines by default
+set mouse=a                     " Enable the mouse in all modes
 set nobackup                    " Don't create backup files
 set nocompatible                " Turn off forced compatibility with old Vi
 set noswapfile                  " Store buffers in memory instead of in temporary files
@@ -28,9 +32,14 @@ set sidescrolloff=15            " Number of cols from horizontal edge to start s
 set smartcase                   " Case sensitive search if search has capitals
 set softtabstop=4               " Behave as though expandtab is off
 set tabstop=4                   " Number of spaces that a Tab counts for
+
+colorscheme darcula
 syntax on
 
 if has ("gui_running")
+    set columns=83              " Show 83 columns by default
+    set lines=40                " Show 40 lines by default
+
     set guioptions -=T
     set guioptions -=m
     set guifont=Consolas:h11:cANSI
@@ -42,52 +51,36 @@ if has("win32")
     behave mswin
 endif
 
-if filereadable(expand("$HOME/.vim/colors/elflord2.vim"))
-    colorscheme elflord2
-endif
-
 "}}}
 
 "{{{ Key Swaps
 
 " Swap # and * and prevent the automatic jump to the first matching result
-nnoremap # *N
-nnoremap * #N
-vnoremap # *N
-vnoremap * #N
+noremap # *N
+noremap * #N
 
 " Swap 0 and ^ because 0 is easier to reach
-nnoremap ^ 0
-nnoremap 0 ^
-vnoremap ^ 0
-vnoremap 0 ^
+noremap ^ 0
+noremap 0 ^
 
 " Swap G and gg because reasons
-nnoremap gg G
-nnoremap G gg
-vnoremap gg G
-vnoremap G gg
-
-" Swap { and [ because regular ['s are much less useful and this saves a Shift
-nnoremap [ {
-nnoremap ] }
-vnoremap [ {
-vnoremap ] }
+noremap gg G
+noremap G gg
 
 "}}}
 
-"{{{ Bindings in Rough Order of Usefulness
+"{{{ Custom Bindings
+
+" Swap between the current and alternate buffers
+nnoremap <C-Tab> <C-^>
 
 " Rebind j/k to gj/gk so wrapped lines are treated like normal lines
 nnoremap <silent> j gj
 nnoremap <silent> k gk
 
 " Press Enter to insert a newline below/above in NORMAL mode
-nmap <Enter> o<Esc>
-nmap <S-Enter> O<Esc>
-
-" Press Ctrl+Backspace to delete the previous word
-inoremap <C-BS> <C-w>
+nnoremap <Enter> o<Esc>
+nnoremap <S-Enter> O<Esc>
 
 " Maintain selection after indenting with << and >>
 vnoremap < <gv
@@ -96,10 +89,6 @@ vnoremap > >gv
 " Make puts match the indent of the current line
 nnoremap p ]p
 nnoremap P ]P
-
-" Center the screen on each search result as they're cycled through
-nnoremap n nzz
-nnoremap N Nzz
 
 " Press Alt+j/k to move the current line up or down
 nnoremap <A-j> :m .+1<CR>==
@@ -110,7 +99,7 @@ vnoremap <A-j> :m '>+1<CR>gv=gv
 vnoremap <A-k> :m '<-2<CR>gv=gv
 
 " Repeat last macro
-nnoremap Q @@
+noremap Q @@
 
 " Press Shift+Tab to dedent in insert mode
 inoremap <S-Tab> <C-o><<
@@ -169,8 +158,11 @@ vnoremap <leader>r "zy:%s/<C-r>z//g<Left><Left>
 " Press <leader>zz to toggle having the window follow cursor
 nnoremap <leader>zz :let &scrolloff=999-&scrolloff<CR>
 
-" Open the built in File Explorer in its own tab
-nnoremap <leader>` :Te<CR>
+" Open the built in File Explorer in its own split
+nnoremap <leader>` :Vex<CR>
+
+" Display the current list of buffers and await a buffer number
+nnoremap <leader>b :ls<CR>:b<Space>
 
 "}}}
 
@@ -186,30 +178,38 @@ function! NumberToggle()
 endfunc
 nnoremap <leader>n :call NumberToggle()<cr>
 
-set diffexpr=MyDiff()
-function MyDiff()
-  let opt = '-a --binary '
-  if &diffopt =~ 'icase' | let opt = opt . '-i ' | endif
-  if &diffopt =~ 'iwhite' | let opt = opt . '-b ' | endif
-  let arg1 = v:fname_in
-  if arg1 =~ ' ' | let arg1 = '"' . arg1 . '"' | endif
-  let arg2 = v:fname_new
-  if arg2 =~ ' ' | let arg2 = '"' . arg2 . '"' | endif
-  let arg3 = v:fname_out
-  if arg3 =~ ' ' | let arg3 = '"' . arg3 . '"' | endif
-  let eq = ''
-  if $VIMRUNTIME =~ ' '
-    if &sh =~ '\<cmd'
-      let cmd = '""' . $VIMRUNTIME . '\diff"'
-      let eq = '"'
-    else
-      let cmd = substitute($VIMRUNTIME, ' ', '" ', '') . '\diff"'
-    endif
-  else
-    let cmd = $VIMRUNTIME . '\diff'
-  endif
-  silent execute '!' . cmd . ' ' . opt . arg1 . ' ' . arg2 . ' > ' . arg3 . eq
-endfunction
+"}}}
+
+"{{{ Plugins
+
+call plug#begin('~/.vim/plugged')
+
+Plug 'elmcast/elm-vim'
+Plug 'vim-syntastic/syntastic'
+Plug 'vim-airline/vim-airline'
+
+call plug#end()
+
+"}}}
+
+"{{{ Global Variables
+
+" Elm
+let g:elm_format_autosave = 1
+let g:elm_jump_to_error = 0
+let g:elm_make_output_file = "elm.js"
+let g:elm_make_show_warnings = 0
+let g:elm_syntastic_show_warnings = 0
+let g:elm_browser_command = ""
+let g:elm_detailed_complete = 0
+let g:elm_format_autosave = 1
+let g:elm_format_fail_silently = 0
+let g:elm_setup_keybindings = 1
+
+" Syntastic
+let g:syntastic_always_populate_loc_list = 1
+let g:syntastic_auto_loc_list = 1
+let g:elm_syntastic_show_warnings = 1
 
 "}}}
 
