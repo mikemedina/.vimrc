@@ -33,7 +33,6 @@ set smartcase                   " Case sensitive search if search has capitals
 set softtabstop=4               " Behave as though expandtab is off
 set tabstop=4                   " Number of spaces that a Tab counts for
 
-colorscheme darcula
 syntax on
 
 if has ("gui_running")
@@ -187,6 +186,7 @@ call plug#begin('~/.vim/plugged')
 Plug 'elmcast/elm-vim'
 Plug 'vim-syntastic/syntastic'
 Plug 'vim-airline/vim-airline'
+Plug 'queezythegreat/vim-YouCompleteMe'
 
 call plug#end()
 
