@@ -183,10 +183,15 @@ nnoremap <leader>n :call NumberToggle()<cr>
 
 call plug#begin('~/.vim/plugged')
 
+Plug 'airblade/vim-gitgutter'
 Plug 'elmcast/elm-vim'
-Plug 'vim-syntastic/syntastic'
+Plug 'nathanaelkane/vim-indent-guides'
+Plug 'powerline/powerline'
+Plug 'roxma/vim-paste-easy'
+Plug 'tpope/vim-fugitive'
+Plug 'tpope/vim-surround'
 Plug 'vim-airline/vim-airline'
-Plug 'queezythegreat/vim-YouCompleteMe'
+Plug 'vim-syntastic/syntastic'
 
 call plug#end()
 
