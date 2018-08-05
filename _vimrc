@@ -31,6 +31,7 @@ set sidescroll=1                " Number of cols to scroll at a time
 set sidescrolloff=15            " Number of cols from horizontal edge to start scrolling
 set smartcase                   " Case sensitive search if search has capitals
 set softtabstop=4               " Behave as though expandtab is off
+set splitright                  " Open new splits to the right instead of the left
 set tabstop=4                   " Number of spaces that a Tab counts for
 
 syntax on
