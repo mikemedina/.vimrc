@@ -34,6 +34,12 @@ set softtabstop=4               " Behave as though expandtab is off
 set splitright                  " Open new splits to the right instead of the left
 set tabstop=4                   " Number of spaces that a Tab counts for
 
+" Enable more colors in the terminal
+let &t_8f="\<Esc>[38;2;%lu;%lu;%lum"
+let &t_8b="\<Esc>[48;2;%lu;%lu;%lum"
+set termguicolors               
+
+colorscheme Apprentice
 syntax on
 
 if has ("gui_running")
@@ -70,6 +76,10 @@ noremap G gg
 "}}}
 
 "{{{ Custom Bindings
+
+" Use Ctrl+n/p to go to the next/previous buffer
+nnoremap <C-n> :w<Enter>:bnext<CR>
+nnoremap <C-p> :w<Enter>:bprevious<CR>
 
 " Swap between the current and alternate buffers
 nnoremap <C-Tab> <C-^>
@@ -186,13 +196,15 @@ call plug#begin('~/.vim/plugged')
 
 Plug 'airblade/vim-gitgutter'
 Plug 'elmcast/elm-vim'
-Plug 'nathanaelkane/vim-indent-guides'
-Plug 'powerline/powerline'
+Plug 'elmcast/elm-oracle'
+Plug 'kshenoy/vim-signature'
 Plug 'roxma/vim-paste-easy'
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-surround'
 Plug 'vim-airline/vim-airline'
+Plug 'vim-airline/vim-airline-themes'
 Plug 'vim-syntastic/syntastic'
+
 
 call plug#end()
 
@@ -216,6 +228,11 @@ let g:elm_setup_keybindings = 1
 let g:syntastic_always_populate_loc_list = 1
 let g:syntastic_auto_loc_list = 1
 let g:elm_syntastic_show_warnings = 1
+
+" Airline
+let g:airline#extensions#tabline#enabled = 1
+let g:airline_theme='deus'
+let g:airline#extensions#syntastic#enabled = 1
 
 "}}}
 
